@@ -1,0 +1,204 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace GameSharp
+{
+    internal class FinalProject : FormWrapper
+    {
+
+        /// <summary>
+        ///  The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.Run(new FinalProject().Window);
+        }
+
+
+        // variables
+        //--------------------
+        Image playButton = Image.FromFile("Sprites/Buttons/playButton.png");
+        Image gameOver = Image.FromFile("Sprites/Buttons/gameOverManarap.png");
+        Image longPole = Image.FromFile("Sprites/items/flappypoleLong.png");
+        Image longPoleDown = Image.FromFile("Sprites/items/flappypoleLongDown.png");
+        Image smallPole = Image.FromFile("Sprites/items/flappypoleSmall.png");
+        Image smallPoleDown = Image.FromFile("Sprites/items/flappypoleSmallDown.png");
+        Image flappyBird = Image.FromFile("Sprites/Players/flappyBirdOG.png");
+        Image flappyBirdPlayScreen = Image.FromFile("Sprites/Backgrounds/flappyBirdBackground.png");
+        Image flappyBirdStartScreen = Image.FromFile("Sprites/Backgrounds/flappyBirdStartScreen.png");
+        int xScreen = 0;
+        int yScreen = 0;
+        int xPlayScreen = 0;
+        int yPlayScreen = 0;
+        int currentScene = 0;
+        int yChange = 0;
+        int Score = 0;
+        Rectangle playButtonRect = new Rectangle(-90, 100, 555, 555);
+        Rectangle longPoleRect = new Rectangle(1500, 610, 150, 450);
+        Rectangle longPoleDownRect = new Rectangle(900, 0, 150, 450);
+        Rectangle smallPoleDownRect = new Rectangle(1500, -15, 150, 420);
+        Rectangle smallPoleRect = new Rectangle(900, 685, 150, 425);
+        Rectangle flappyBirdRect = new Rectangle(100, 200, 125, 75);
+        Rectangle GameOverRect = new Rectangle(700, 400, 455, 455);
+        protected override void Window_Paint(object? sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+            // YOUR CODE HERE!
+
+            // Full screen (maximize)
+            Window.WindowState = FormWindowState.Maximized;
+
+            // Intro Screen
+            if (currentScene == 0)
+            {
+                g.InterpolationMode =
+                System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.DrawImage(flappyBirdStartScreen, xPlayScreen, yPlayScreen, 2000, 1000);
+
+                g.InterpolationMode =
+                System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.DrawImage(playButton, playButtonRect);
+
+                g.DrawString("Press SPACE To Jump", new Font("Arial", 20), new SolidBrush(Color.Black), 85, 325);
+
+                g.DrawString("Press SPACE To Start", new Font("Arial", 30), new SolidBrush(Color.Black), 50, 275);
+                if (IsKeyDown(Keys.Space))
+                    currentScene = 1;
+            }
+
+            // Play Screen
+            else if (currentScene == 1)
+            {
+
+                g.InterpolationMode =
+                System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.DrawImage(flappyBirdPlayScreen, xScreen, yScreen, 2000, 1000);
+
+                // Drawing Poles
+                g.DrawImage(smallPole, smallPoleRect);
+                smallPoleRect.X = smallPoleRect.X - 7;
+
+                g.DrawImage(longPoleDown, longPoleDownRect);
+                longPoleDownRect.X = longPoleDownRect.X - 7;
+
+                g.DrawImage(longPole, longPoleRect);
+                longPoleRect.X = longPoleRect.X - 7;
+
+                g.DrawImage(smallPoleDown, smallPoleDownRect);
+                smallPoleDownRect.X = smallPoleDownRect.X - 7;
+
+                // Dawing Flappy Bird
+                g.DrawImage(flappyBird, flappyBirdRect);
+                flappyBirdRect.Y = flappyBirdRect.Y - (int)yChange;
+                yChange = yChange - 3;
+
+                // Drawing score
+                g.DrawString("Score: " + Score, new Font("Arial", 25), new SolidBrush(Color.Black), 0, 0);
+
+                // Updating Score and Moving Poles
+                if (smallPoleRect.X < -10)
+                {
+                    Score = Score + 1;
+                    smallPoleRect.X = 1200;
+                }
+
+                if (longPoleRect.X < -10)
+                {
+                    Score = Score + 1;
+                    longPoleRect.X = 1400;
+                }
+
+                if (smallPoleDownRect.X < -10)
+                {
+                    Score = Score + 1;
+                    smallPoleDownRect.X = 1800;
+                }
+
+                if (longPoleDownRect.X < -10)
+                {
+                    Score = Score + 1;
+                    longPoleDownRect.X = 1500;
+                }
+
+                // Animating Flappy Bird
+                if (IsKeyDown(Keys.Space))
+                {
+                    yChange = 15;
+                    yChange = yChange + 1;
+                }
+
+                // Checking For Collionsions and telling to switch screens 
+                if (flappyBirdRect.IntersectsWith(smallPoleRect))
+                {
+                    smallPoleRect.X = 900;
+                    longPoleRect.X = 1500;
+                    longPoleDownRect.X = 900;
+                    smallPoleDownRect.X = 1500;
+                    currentScene = 2;
+                }
+
+                if (flappyBirdRect.IntersectsWith(longPoleRect))
+                {
+                    smallPoleRect.X = 900;
+                    longPoleRect.X = 1500;
+                    longPoleDownRect.X = 900;
+                    smallPoleDownRect.X = 1500;
+                    currentScene = 2;
+                }
+
+                if (flappyBirdRect.IntersectsWith(smallPoleDownRect))
+                {
+                    smallPoleRect.X = 900;
+                    longPoleRect.X = 1500;
+                    longPoleDownRect.X = 900;
+                    smallPoleDownRect.X = 1500;
+                    currentScene = 2;
+                }
+
+                if (flappyBirdRect.IntersectsWith(longPoleDownRect))
+                {
+                    smallPoleRect.X = 900;
+                    longPoleRect.X = 1500;
+                    longPoleDownRect.X = 900;
+                    smallPoleDownRect.X = 1500; 
+                    currentScene = 2;
+                }
+            }
+
+            // Game Over Screen
+            else if (currentScene == 2)
+            {
+                g.InterpolationMode =
+                System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.DrawImage(flappyBirdPlayScreen, xScreen, yScreen, 2000, 1000);
+
+                g.InterpolationMode =
+                System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.DrawImage(gameOver, GameOverRect);
+
+                g.DrawString("Press 'Y' To Play Again and 'N' to Quit", new Font("Arial", 25), new SolidBrush(Color.Black), 665, 840);
+
+                //Switching Scenes and Escaping
+                if (IsKeyDown(Keys.Y))
+                {
+                    currentScene = 0;
+                    Score = 0;
+                }
+
+                if (IsKeyDown(Keys.N))
+                {
+                    System.Environment.Exit(0);
+                }
+
+            }
+
+                
+
+        }
+
+
+    }
+}
